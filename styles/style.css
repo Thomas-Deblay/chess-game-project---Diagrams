@@ -2,3 +2,47 @@
   margin: 0;
   padding: 0;
 }
+
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  height: 100vh;
+}
+
+.top-banner,
+#chess-board,
+.bottom-infos {
+  text-align: center;
+}
+
+.top-banner,
+.bottom-infos {
+}
+
+/* ====== BOARD STYLING ======= */
+#chess-board {
+  width: 80vw;
+  height: 80vw;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.square {
+  width: 12.5%;
+  height: 12.5%;
+  float: left;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.white {
+  background-color: #f0d9b5;
+}
+
+.black {
+  background-color: #b58863;
+}
