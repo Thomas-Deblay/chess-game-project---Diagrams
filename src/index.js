@@ -80,7 +80,15 @@ function boardInit() {
     } else {
       index % 2 ? square.classList.add('white') : square.classList.add('black');
     }
+    // Add the line letters and colomn numbers (Bonus)
+    // adding the pieces
+    piece
+      ? (square.innerHTML = `<img src="img/${piece}.png" alt="${piece.slice(
+          1
+        )}">`)
+      : piece;
 
+    console.log(square.innerHTML);
     chessBoard.append(square);
   });
 }
