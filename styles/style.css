@@ -39,9 +39,16 @@ body {
   align-items: center;
 }
 
+.square > div {
+  width-max: 100%;
+  width: 90%;
+  z-index: 1;
+  cursor: pointer;
+}
+
 .square img {
   max-width: 100%;
-  width: 90%;
+  width: 89%;
 }
 
 .white {
