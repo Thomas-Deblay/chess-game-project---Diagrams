@@ -1,5 +1,18 @@
 /************  HTML ELEMENTS  ************/
 const chessBoard = document.querySelector('#chess-board');
+isWhiteTurn = true;
+// ai = false;
+
+const diagramSolution = [
+  { pieceId: 'Pawnd2', moveDestination: 'd4' },
+  { pieceId: 'Pawnd7', moveDestination: 'd5' },
+  { pieceId: 'Pawne2', moveDestination: 'e4' },
+  { pieceId: 'Pawnd5', moveDestination: 'e4' },
+];
+let move = 0;
+
+//Making The AI play
+// if (ai) aiPlay();
 
 /************  Board start   ************/
 const boardStart = [
@@ -84,11 +97,6 @@ function boardInit(board) {
 
     //creating square id like chess notation for square and pieces
     square.setAttribute('id', `${columnId[columnCount]}${row + 1}`);
-    columnCount++;
-    // starting a new line, reset column notation
-    if (columnCount > 7) {
-      columnCount = 0;
-    }
 
     //// Making white and black square alternate
     if (row % 2) {
@@ -118,18 +126,29 @@ function boardInit(board) {
     //Adding the eventListenners on the pieces --- DRAG IS STARTING
     pieces.addEventListener('dragstart', isDraggred);
 
-    //Adding the eventListener on the squares --- WHERE DRAG IS LANDING ? AND IS IT AN AVAILABLE MOVE ?
+    //Adding the eventListener on the squares --- WHERE DRAG IS LANDING ? AND IS IT AN AVAILABLE AREA (THE BOARD) ?
     square.addEventListener('dragover', allowDrop);
     square.addEventListener('drop', drop);
 
     piece ? square.appendChild(pieces) : '';
     chessBoard.append(square);
+
+    columnCount++;
+    // starting a new line, reset column notation
+    if (columnCount > 7) {
+      columnCount = 0;
+    }
   });
 }
 
 function isDraggred(ev) {
   const piece = ev.target;
-  ev.dataTransfer.setData('text', piece.id);
+  // If it's the color turn, then can play
+  const pieceColor = piece.getAttribute('color');
+  (isWhiteTurn && pieceColor === 'white') ||
+  (!isWhiteTurn && pieceColor === 'black')
+    ? ev.dataTransfer.setData('text', piece.id)
+    : '';
 }
 
 function allowDrop(ev) {
@@ -137,13 +156,75 @@ function allowDrop(ev) {
 }
 
 function drop(ev) {
-  console.log('is dropped');
   ev.preventDefault();
   let data = ev.dataTransfer.getData('text');
   const piece = document.getElementById(data);
   const destinationSquare = ev.currentTarget;
   let destinationSquareId = destinationSquare.id;
-  destinationSquare.appendChild(piece);
+
+  // check if it's the right next move and allow Capture if it is one
+  if (
+    canCapture(destinationSquare) &&
+    diagramSolutionMoves(piece.id, destinationSquareId)
+  ) {
+    while (destinationSquare.firstChild) {
+      destinationSquare.removeChild(destinationSquare.firstChild);
+    }
+    piece.id = `${piece.id.slice(0, piece.id.length - 2)}${
+      diagramSolution[move].moveDestination
+    }`;
+    nextMove();
+    destinationSquare.appendChild(piece);
+    isWhiteTurn = !isWhiteTurn;
+    return;
+  } else if (diagramSolutionMoves(piece.id, destinationSquareId)) {
+    //we give the newx id to the moving piece
+    piece.id = `${piece.id.slice(0, piece.id.length - 2)}${
+      diagramSolution[move].moveDestination
+    }`;
+    nextMove();
+    destinationSquare.appendChild(piece);
+    // Change the player/color that can play
+    isWhiteTurn = !isWhiteTurn;
+    return;
+  } else {
+    console.log('this is not the right Move');
+  }
 }
+
+//
+function canCapture(square) {
+  if (square.querySelector('.piece')) {
+    return square.querySelector('.piece').getAttribute('color');
+  }
+  return '';
+}
+
+function diagramSolutionMoves(startingPieceId, triedMove) {
+  if (
+    startingPieceId === diagramSolution[move].pieceId &&
+    triedMove === diagramSolution[move].moveDestination
+  ) {
+    return true;
+  }
+  return false;
+}
+
+//we go to the next move after we have updated the new square for the piece id
+function nextMove() {
+  move++;
+  //   ai = !ai;
+  return move === diagramSolution.length ? succeedDiagram() : '';
+}
+
+function succeedDiagram() {
+  console.log('you ve succeed');
+}
+
+// function aiPlay() {
+//   console.log('the AI have Play, YourTURN');
+//   move++;
+//   isWhiteTurn = !isWhiteTurn;
+// }
 
 boardInit(boardStart);
