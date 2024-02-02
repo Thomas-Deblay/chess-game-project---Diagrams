@@ -63,7 +63,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
-  margin-top: 40px;
+  margin-top: 20px;
 }
 
 .bottom-infos {
@@ -151,20 +151,31 @@ body {
 }
 
 .heading {
-  margin-top: 25px;
+  margin-top: 20px;
+  font-size: 3rem;
+  background: linear-gradient(to right, rgb(67, 124, 205), rgb(69, 214, 202));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
 .chess-count {
-  margin-top: 40px;
+  margin-top: 15px;
 }
 
 #diagram-count {
   font-size: 18px;
+  line-height: 32px;
 }
 
 #diagram-count span {
   color: orange;
   font-weight: bold;
+}
+
+.diagram-rule {
+  color: grey;
+  font-style: italic;
 }
 
 #end-view {
@@ -179,6 +190,16 @@ body {
 
 #end-view span {
   color: green;
+}
+
+.difficulty {
+  font-weight: bold;
+  color: grey;
+}
+
+.difficulty-stars {
+  color: gold;
+  font-weight: 900;
 }
 
 /* ======= CSS Styling The page View ========== */

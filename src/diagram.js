@@ -18,4 +18,12 @@ class Diagram {
   getWhoStart() {
     return console.log(this.whoWin);
   }
+
+  displayDifficulty() {
+    return this.difficulty === 1
+      ? "<a class='difficulty-stars'>*</a>**"
+      : this.difficulty === 2
+      ? "<a class='difficulty-stars'>**</a>*"
+      : "<a class='difficulty-stars'>***</a>";
+  }
 }

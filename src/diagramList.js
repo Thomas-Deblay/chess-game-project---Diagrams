@@ -18,7 +18,7 @@ class DiagramList {
 
   hasEnded() {
     //code here
-    if (this.diagramCount === 2) {
+    if (this.diagramCount === 3) {
       return true;
     }
     return false;

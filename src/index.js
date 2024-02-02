@@ -3,6 +3,8 @@ import {
   diagramSolution1,
   diagramBoard2,
   diagramSolution2,
+  diagramBoard3,
+  diagramSolution3,
 } from './diagramsData.js';
 
 const diagram1 = new Diagram(
@@ -10,7 +12,7 @@ const diagram1 = new Diagram(
   diagramSolution1,
   'white',
   3,
-  2,
+  3,
   120
 );
 const diagram2 = new Diagram(
@@ -22,7 +24,16 @@ const diagram2 = new Diagram(
   120
 );
 
-const diagramList = new DiagramList([diagram1, diagram2]);
+const diagram3 = new Diagram(
+  diagramBoard3,
+  diagramSolution3,
+  'white',
+  2,
+  2,
+  120
+);
+
+const diagramList = new DiagramList([diagram1, diagram2, diagram3]);
 diagramList.shuffleDiagrams();
 /************  HTML ELEMENTS  ************/
 const chessBoard = document.querySelector('#chess-board');
@@ -43,7 +54,15 @@ endView.style.display = 'none';
 // === DISPLAY NUMBER OF DIAGRAM =====
 function counTitle() {
   const displayCount = document.querySelector('#diagram-count');
-  displayCount.innerHTML = `Diagram <span>${diagramList.diagramCount}</span> out of 2 of the day`;
+  displayCount.innerHTML = `Diagram <span>${
+    diagramList.diagramCount
+  }</span> out of 3 of the day <br> <a class="diagram-rule">The ${
+    diagramList.diagrams[diagramList.currentDiagramIndex].whoWin
+  } play and win in ${
+    diagramList.diagrams[diagramList.currentDiagramIndex].inHowManyMoves
+  } moves</a> - <a class='difficulty'> Difficulty : ${diagramList.diagrams[
+    diagramList.currentDiagramIndex
+  ].displayDifficulty()} </a>`;
 }
 
 // ==== SOLUTION BUTTON ===
