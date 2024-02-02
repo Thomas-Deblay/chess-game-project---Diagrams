@@ -1,87 +1,72 @@
+import {
+  diagramBoard1,
+  diagramSolution1,
+  diagramBoard2,
+  diagramSolution2,
+} from './diagramsData.js';
+
+const diagram1 = new Diagram(
+  diagramBoard1,
+  diagramSolution1,
+  'white',
+  3,
+  2,
+  120
+);
+const diagram2 = new Diagram(
+  diagramBoard2,
+  diagramSolution2,
+  'white',
+  2,
+  2,
+  120
+);
+
+const diagramList = new DiagramList([diagram1, diagram2]);
+diagramList.shuffleDiagrams();
 /************  HTML ELEMENTS  ************/
 const chessBoard = document.querySelector('#chess-board');
-isWhiteTurn = true;
-// ai = false;
+const endView = document.querySelector('#end-view');
+const infoDiv = document.querySelector('.bottom-infos');
+var isWhiteTurn = true;
+var ai = false;
+var pieceId;
 
-const diagramSolution = [
-  { pieceId: 'Pawnd2', moveDestination: 'd4' },
-  { pieceId: 'Pawnd7', moveDestination: 'd5' },
-  { pieceId: 'Pawne2', moveDestination: 'e4' },
-  { pieceId: 'Pawnd5', moveDestination: 'e4' },
-];
+let diagramSolution =
+  diagramList.diagrams[diagramList.currentDiagramIndex].diagramSolution;
 let move = 0;
 
-//Making The AI play
-// if (ai) aiPlay();
+//Initiate views
+chessBoard.style.display = 'block';
+endView.style.display = 'none';
 
-/************  Board start   ************/
-const boardStart = [
-  'bRook',
-  'bKnight',
-  'bBishop',
-  'bQueen',
-  'bKing',
-  'bBishop',
-  'bKnight',
-  'bRook',
-  'bPawn',
-  'bPawn',
-  'bPawn',
-  'bPawn',
-  'bPawn',
-  'bPawn',
-  'bPawn',
-  'bPawn',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  'wPawn',
-  'wPawn',
-  'wPawn',
-  'wPawn',
-  'wPawn',
-  'wPawn',
-  'wPawn',
-  'wPawn',
-  'wRook',
-  'wKnight',
-  'wBishop',
-  'wQueen',
-  'wKing',
-  'wBishop',
-  'wKnight',
-  'wRook',
-];
+// === DISPLAY NUMBER OF DIAGRAM =====
+function counTitle() {
+  const displayCount = document.querySelector('#diagram-count');
+  displayCount.innerHTML = `Diagram <span>${diagramList.diagramCount}</span> out of 2 of the day`;
+}
 
+// ==== SOLUTION BUTTON ===
+function setSolutionButton() {
+  setTimeout(() => {
+    const showSolution = document.createElement('button');
+    showSolution.classList.add('solution-button');
+    showSolution.innerText = 'Solution';
+    showSolution.addEventListener('click', () => {
+      diagramList.diagramSucceed--;
+      const aiPlayingSolution = setInterval(() => {
+        move < diagramSolution.length
+          ? aiPlay()
+          : clearInterval(aiPlayingSolution);
+      }, 2000);
+    });
+    infoDiv.appendChild(showSolution);
+  }, 10000);
+}
+
+setSolutionButton();
+
+// ==== CREATE THE BOARD WITH ALL THE EVENT LISTENERS =====================
 // Function displaying a board with the position that is given as a parameter
 function boardInit(board) {
   //Column variable init
@@ -104,7 +89,7 @@ function boardInit(board) {
     } else {
       index % 2 ? square.classList.add('white') : square.classList.add('black');
     }
-    // Add the line letters and colomn numbers (Bonus)
+    // Add the line letters and colomn numbers around the board (Bonus)
     //---- code it here ------
     // adding the pieces
     if (piece) {
@@ -133,6 +118,7 @@ function boardInit(board) {
     piece ? square.appendChild(pieces) : '';
     chessBoard.append(square);
 
+    counTitle();
     columnCount++;
     // starting a new line, reset column notation
     if (columnCount > 7) {
@@ -140,9 +126,12 @@ function boardInit(board) {
     }
   });
 }
+boardInit(diagramList.diagrams[diagramList.currentDiagramIndex].board);
 
+// === Allowing Drag and drop from User
 function isDraggred(ev) {
   const piece = ev.target;
+  pieceId = piece.id;
   // If it's the color turn, then can play
   const pieceColor = piece.getAttribute('color');
   (isWhiteTurn && pieceColor === 'white') ||
@@ -157,8 +146,9 @@ function allowDrop(ev) {
 
 function drop(ev) {
   ev.preventDefault();
-  let data = ev.dataTransfer.getData('text');
+  let data = pieceId;
   const piece = document.getElementById(data);
+
   const destinationSquare = ev.currentTarget;
   let destinationSquareId = destinationSquare.id;
 
@@ -178,7 +168,7 @@ function drop(ev) {
     isWhiteTurn = !isWhiteTurn;
     return;
   } else if (diagramSolutionMoves(piece.id, destinationSquareId)) {
-    //we give the newx id to the moving piece
+    //we give the new id to the moving piece
     piece.id = `${piece.id.slice(0, piece.id.length - 2)}${
       diagramSolution[move].moveDestination
     }`;
@@ -188,7 +178,12 @@ function drop(ev) {
     isWhiteTurn = !isWhiteTurn;
     return;
   } else {
-    console.log('this is not the right Move');
+    //SHOW PLAYER THAT THE ATTENDED MOVE IS NOT THE RIGHT MOVE
+    const wrongMove = document.createElement('p');
+    wrongMove.classList.add('wrong-move');
+    wrongMove.innerText = "That's a wrong move";
+    infoDiv.appendChild(wrongMove);
+    setTimeout(() => infoDiv.removeChild(wrongMove), 4000);
   }
 }
 
@@ -200,6 +195,7 @@ function canCapture(square) {
   return '';
 }
 
+// === PART THAT CAN BE METHOD OF AN OBJECT
 function diagramSolutionMoves(startingPieceId, triedMove) {
   if (
     startingPieceId === diagramSolution[move].pieceId &&
@@ -213,18 +209,70 @@ function diagramSolutionMoves(startingPieceId, triedMove) {
 //we go to the next move after we have updated the new square for the piece id
 function nextMove() {
   move++;
-  //   ai = !ai;
-  return move === diagramSolution.length ? succeedDiagram() : '';
+  move === diagramSolution.length ? succeedDiagram() : (ai = !ai);
+  ai ? aiPlay() : '';
 }
 
+// ==== SUCCEED DIAGRAM SEQUENCE ====================================
 function succeedDiagram() {
-  console.log('you ve succeed');
+  diagramList.diagramSucceed++;
+  document.querySelector('.solution-button')
+    ? infoDiv.removeChild(document.querySelector('.solution-button'))
+    : '';
+  const moveNextButton = document.createElement('button');
+  moveNextButton.classList.add('success-button');
+  moveNextButton.innerText = 'Next Diagram';
+  moveNextButton.addEventListener('click', () => {
+    diagramList.moveToNextDiagram();
+    removeAllChildNodes(chessBoard);
+    move = 0;
+    ai = false;
+    diagramList.diagrams[diagramList.currentDiagramIndex].whoWin === 'white'
+      ? (isWhiteTurn = true)
+      : (isWhiteTurn = false);
+    diagramSolution =
+      diagramList.diagrams[diagramList.currentDiagramIndex].diagramSolution;
+    infoDiv.removeChild(moveNextButton);
+    setSolutionButton();
+    boardInit(diagramList.diagrams[diagramList.currentDiagramIndex].board);
+  });
+
+  diagramList.hasEnded() ? showEndView() : infoDiv.appendChild(moveNextButton);
 }
 
-// function aiPlay() {
-//   console.log('the AI have Play, YourTURN');
-//   move++;
-//   isWhiteTurn = !isWhiteTurn;
-// }
+function showEndView() {
+  document.querySelector('#result').innerText = diagramList.diagramSucceed;
+  chessBoard.style.display = 'none';
+  endView.style.display = 'block';
+}
 
-boardInit(boardStart);
+function removeAllChildNodes(parent) {
+  while (parent.firstChild) {
+    parent.removeChild(parent.firstChild);
+  }
+}
+
+// === MAKE THE MOVE OF THE OPPOSITE COLOR =======================
+function aiPlay() {
+  const toMove = document.getElementById(diagramSolution[move].pieceId);
+  const moveTo = document.getElementById(diagramSolution[move].moveDestination);
+
+  toMove.id = `${toMove.id.slice(0, toMove.id.length - 2)}${
+    diagramSolution[move].moveDestination
+  }`;
+
+  // I had to do a timeout to have access to the lastChild, otherwise i had the value null
+  setTimeout(() => {
+    if (moveTo.lastChild) {
+      while (moveTo.lastChild) {
+        moveTo.removeChild(moveTo.lastChild);
+      }
+    }
+    moveTo.appendChild(toMove);
+  }, 500);
+
+  move++;
+  move === diagramSolution.length ? succeedDiagram() : '';
+  ai = !ai;
+  isWhiteTurn = !isWhiteTurn;
+}
