@@ -244,12 +244,16 @@ body {
 
   .heading {
     padding: 10px;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
     margin-top: 10px;
   }
 
   body {
-    overflow: scroll;
+    overflow: auto;
+  }
+
+  #end-view {
+    margin-top: 80px;
   }
 }
 
