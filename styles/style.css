@@ -244,8 +244,12 @@ body {
 
   .heading {
     padding: 10px;
-    margin-left: 1px;
     margin-bottom: 40px;
+    margin-top: 10px;
+  }
+
+  body {
+    overflow: scroll;
   }
 }
 
