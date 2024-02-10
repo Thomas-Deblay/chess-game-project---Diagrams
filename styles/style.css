@@ -49,6 +49,9 @@ body {
 .square img {
   max-width: 100%;
   width: 89%;
+  /* -moz-user-select: none;
+  -webkit-user-select: none;
+  user-select: none; */
 }
 
 .white {
